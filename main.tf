@@ -1,7 +1,8 @@
 module "networking" {
-    source = "./modules/networking"
-    project_id = var.project_id
-    region = var.region
+  source     = "./modules/networking"
+  project_id = var.project_id
+  region     = var.region
+  environment = var.environment
 }
 
 module "compute" {
@@ -10,7 +11,6 @@ module "compute" {
     zone = var.zone
     instance_name = var.instance_name
 }
-
 module "iam" {
     source = "./modules/iam"
     project_id = var.project_id

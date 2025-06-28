@@ -1,0 +1,41 @@
+name: Terraform CI/CD Pipeline
+
+on:
+    push:
+        branches: ["dev", "staging", "prod"]
+    pull_request:
+        branches: ["dev", "staging", "prod"]
+
+jobs:
+    terraform:
+        name: 'Terraform - ${{ github.ref_name }}'
+        runs-on: ubuntu-latest
+
+        env:
+            TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
+            TF_VAR_region: ${{ secrets.GCP_REGION }}
+            TF_VAR_zone: ${{ github.ref_name }}
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            - name: Set up Terraform 
+              uses: hashicorp/setup-terraform@v3
+              with:
+                terraform_version: 1.8.0
+
+            - name: Terraform Format Check
+              run: terraform fmt -check -recursive 
+            
+            - name: Terraformt Init
+              run: terraform init
+
+            - name: Terraform Validate
+              run: terraform validate
+
+            - name: Terraform Plan
+              run: terraform plan -out=tfplan.binary -var-file="envs/${{ github.ref_name }}/terraform.tfvars"
+
+            - name: Show Terraform Plan 
+              run: terraform show -no-color tfplan.binary            
