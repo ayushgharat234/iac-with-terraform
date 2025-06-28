@@ -1,3 +1,3 @@
-output "bound_roles" {
-    value = var.roles
+output "iam_binding" {
+    value = google_project_iam_member.viewer.role
 }

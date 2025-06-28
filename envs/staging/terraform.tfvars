@@ -1,0 +1,5 @@
+project_id     = "peak-castle-464308-j6"
+region         = "asia-south1"
+zone           = "asia-south1-b"
+instance_name  = "staging-instance"
+bucket_name    = "staging-system-state"

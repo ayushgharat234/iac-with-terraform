@@ -1,8 +1,5 @@
-resource "google_project_iam_member" "iam_binding" {
-    for_each = toset(var.roles)
-
-    project = var.project_id
-     role    = each.value
-
-    member = var.member_type == "user" ? "user:${var.member_email}" : "serviceAccount:${var.member_email}"
+resource "google_project_iam_member" "viewer" {
+  project = var.project_id
+  role = "roles/viewer"
+  member = "serviceAccount:${var.project_id}@appspot.gserviceaccount.com"
 }
