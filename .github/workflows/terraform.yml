@@ -42,7 +42,17 @@ jobs:
         run: terraform validate
 
       - name: Terraform Format Check
-        run: terraform fmt -check -recursive
+        run: terraform fmt -recursive
+
+      - name: Auto-format and Commit Changes
+        run: |
+          terraform fmt -recursive
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add .
+          git diff --cached --quiet || git commit -m "ci: auto-format Terraform files"
+          git push || echo "No changes to push"
+
 
       - name: Terraform Plan
         run: terraform plan -var-file="envs/${{ github.ref_name }}/terraform.tfvars" -out=tfplan.binary
