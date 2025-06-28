@@ -35,7 +35,8 @@ jobs:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
       - name: Terraform Init (GCS Backend)
-        run: terraform init
+        run: terraform init -backend-config="envs/${{ github.ref_name }}/backend.config"
+
 
       - name: Terraform Validate
         run: terraform validate
