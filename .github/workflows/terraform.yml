@@ -18,7 +18,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./iac-with-terraform
+        working-directory: .
 
     steps:
       - name: Checkout Code
