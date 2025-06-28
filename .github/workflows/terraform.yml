@@ -1,53 +1,53 @@
 name: Terraform CI/CD Pipeline
 
 on:
-    push:
-        branches: ["dev", "staging", "prod"]
-    pull_request:
-        branches: ["dev", "staging", "prod"]
+  push:
+    branches: ["dev", "staging", "prod"]
+  pull_request:
+    branches: ["dev", "staging", "prod"]
 
 jobs:
-    terraform:
-        name: 'Terraform - ${{ github.ref_name }}'
-        runs-on: ubuntu-latest
+  terraform:
+    name: 'Terraform - ${{ github.ref_name }}'
+    runs-on: ubuntu-latest
 
-        env:
-            TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
-            TF_VAR_region: ${{ secrets.GCP_REGION }}
-            TF_VAR_zone: ${{ github.ref_name }}
+    env:
+      TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
+      TF_VAR_region: ${{ secrets.GCP_REGION }}
+      TF_VAR_zone: ${{ secrets.GCP_ZONE }}
+      GOOGLE_CLOUD_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
 
-        steps:
-            - name: Checkout Code
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-            - name: Set up Terraform 
-              uses: hashicorp/setup-terraform@v3
-              with:
-                terraform_version: 1.8.0
+      - name: Set up Terraform 
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.0
 
-            - name: Auto-format Terraform and Push Back
-              run: |
-                terraform fmt -recursive
-                git config user.name "github-actions"
-                git config user.email "actions@github.com"
-                git add .
-                git diff --cached --quiet || git commit -m "ci: auto-format Terraform files"
-                git push || echo "Nothing to push"
-              
-            - name: Authenticate to GCP
-              uses: google-github-actions/auth@v2
-              with:
-                credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
-            
-            - name: Terraformt Init
-              run: terraform init
+      - name: Configure gcloud CLI (optional but good for debugging)
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-            - name: Terraform Validate
-              run: terraform validate
+      - name: Auto-format Terraform (no push)
+        run: terraform fmt -recursive
 
-            - name: Terraform Plan
-              run: terraform plan -out=tfplan.binary -var-file="envs/${{ github.ref_name }}/terraform.tfvars"
+      - name: Terraform Init
+        run: terraform init -backend-config="bucket=${{ secrets.GCP_TFSTATE_BUCKET }}" \
+                            -backend-config="prefix=${{ github.ref_name }}"
 
-            - name: Show Terraform Plan 
-              run: terraform show -no-color tfplan.binary            
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan.binary -var-file="envs/${{ github.ref_name }}/terraform.tfvars"
+
+      - name: Show Terraform Plan 
+        run: terraform show -no-color tfplan.binary
