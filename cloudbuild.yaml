@@ -1,0 +1,13 @@
+steps:
+  - name: 'hashicorp/terraform:1.8.0'
+    entrypoint: sh
+    args: 
+      - -c
+      - |
+          terraform init
+          terraform apply -auto-approve -var-file="envs/${_ENV}/terraform.tfvars"
+      
+substitutions:
+  _ENV: prod
+
+timeout: 1200s
