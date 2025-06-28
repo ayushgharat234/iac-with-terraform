@@ -33,6 +33,12 @@ jobs:
                 git add .
                 git diff --cached --quiet || git commit -m "ci: auto-format Terraform files"
                 git push || echo "Nothing to push"
+              
+            - name: Authenticate to GCP
+              uses: google-github-actions/auth@v2
+              with:
+                credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
             
             - name: Terraformt Init
               run: terraform init
