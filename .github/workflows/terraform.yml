@@ -8,7 +8,7 @@ on:
 
 jobs:
   terraform:
-    name: "Terraform - ${{ github.ref_name }}"
+    name: "Terraform CI/CD - ${{ github.ref_name }}"
     runs-on: ubuntu-latest
 
     env:
@@ -35,16 +35,16 @@ jobs:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
       - name: Terraform Init (GCS Backend)
-        run: terraform init -backend-config="envs/${{ github.ref_name }}/backend.config"
-
+        run: terraform init -backend-config="envs/${{ github.ref_name }}/backend.config" -reconfigure
 
       - name: Terraform Validate
         run: terraform validate
 
       - name: Terraform Format Check
-        run: terraform fmt -recursive
+        run: terraform fmt -check -recursive
 
-      - name: Auto-format and Commit Changes
+      - name: Auto-format & Commit 
+        if: github.event_name == 'push'
         run: |
           terraform fmt -recursive
           git config user.name "github-actions"
@@ -53,11 +53,22 @@ jobs:
           git diff --cached --quiet || git commit -m "ci: auto-format Terraform files"
           git push || echo "No changes to push"
 
-      - name: Select Terraform Workspace
+      - name: Select or Create Workspace
         run: terraform workspace select ${{ github.ref_name }} || terraform workspace new ${{ github.ref_name }}
 
       - name: Terraform Plan
-        run: terraform plan -var-file="envs/${{ github.ref_name }}/terraform.tfvars" -out=tfplan.binary
+        run: terraform plan -lock-timeout=60s -var-file="envs/${{ github.ref_name }}/terraform.tfvars" -out=tfplan.binary
 
       - name: Show Terraform Plan
         run: terraform show -no-color tfplan.binary
+
+      - name: Terraform Apply (only on push)
+        if: github.event_name == 'push'
+        run: terraform apply -lock-timeout=60s -auto-approve tfplan.binary
+
+      - name: Upload Terraform Plan
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: tfplan.binary
