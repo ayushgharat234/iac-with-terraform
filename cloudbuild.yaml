@@ -10,3 +10,11 @@ steps:
             -lock-timeout=60s \
             -auto-approve \
             -var-file="envs/${_ENV}/terraform.tfvars"
+
+substitutions:
+  _ENV: dev
+
+timeout: 1200s
+
+options:
+  logging: CLOUD_LOGGING_ONLY
