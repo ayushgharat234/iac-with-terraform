@@ -4,13 +4,14 @@ steps:
     args:
       - -c
       - |
-          terraform init -backend-config="envs/dev/backend.config" -reconfigure
-          terraform apply -auto-approve -var-file="envs/dev/terraform.tfvars"
+          terraform init -backend-config="envs/${_ENV}/backend.config" -reconfigure
+          terraform workspace select ${_ENV} || terraform workspace new ${_ENV}
+          terraform apply -auto-approve -var-file="envs/${_ENV}/terraform.tfvars"
 
 substitutions:
-  _ENV: dev
-
-timeout: 1200s
+  _ENV: dev  
 
 options:
   logging: CLOUD_LOGGING_ONLY
+
+timeout: 1200s
