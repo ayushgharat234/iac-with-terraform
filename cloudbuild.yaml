@@ -4,7 +4,7 @@ steps:
     args:
       - -c
       - |
-          terraform init -backend-config="envs/dev/backend.config"
+          terraform init -backend-config="envs/dev/backend.config" -reconfigure
           terraform apply -auto-approve -var-file="envs/dev/terraform.tfvars"
 
 substitutions:
