@@ -1,19 +1,3 @@
-import {
-  to = module.compute.google_compute_instance.vm_instance
-  id = "projects/${var.project_id}/zones/asia-south1-a/instances/dev-instance"
-}
-
-
-import {
-  to = module.networking.google_compute_network.vpc
-  id = "projects/${var.project_id}/global/networks/vpc-dev"
-}
-
-import {
-  to = module.storage.google_storage_bucket.bucket
-  id = "dev-system-state" // Bucket name is the ID for GCS buckets
-}
-
 module "networking" {
   source     = "./modules/networking"
   project_id = var.project_id
