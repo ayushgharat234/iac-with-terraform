@@ -1,5 +1,0 @@
-project_id     = "peak-castle-464308-j6"
-region         = "asia-south1"
-zone           = "asia-south1-c"
-instance_name  = "prod-instance"
-bucket_name    = "prod-system-state"

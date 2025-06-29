@@ -1,5 +1,0 @@
-project_id     = "peak-castle-464308-j6"
-region         = "asia-south1"
-zone           = "asia-south1-a"
-instance_name  = "dev-vm-instance"
-bucket_name    = "xml-pipeline-bucket"
