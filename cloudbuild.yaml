@@ -1,16 +1,16 @@
 steps:
   - name: 'hashicorp/terraform:1.8.0'
     entrypoint: sh
-    args: 
+    args:
       - -c
       - |
-          terraform init
-          terraform apply -auto-approve -var-file="envs/${_ENV}/terraform.tfvars"
-      
+          terraform init -backend-config="envs/dev/backend.config"
+          terraform apply -auto-approve -var-file="envs/dev/terraform.tfvars"
+
 substitutions:
   _ENV: dev
 
+timeout: 1200s
+
 options:
   logging: CLOUD_LOGGING_ONLY
-
-timeout: 1200s
