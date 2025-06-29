@@ -6,10 +6,14 @@ steps:
       - |
           terraform init -backend-config="envs/${_ENV}/backend.config" -reconfigure
           terraform workspace select ${_ENV} || terraform workspace new ${_ENV}
-          terraform apply -auto-approve -var-file="envs/${_ENV}/terraform.tfvars"
+          terraform apply \
+            -lock-timeout=60s \
+            -auto-approve \
+            -var-file="envs/${_ENV}/terraform.tfvars" \
+            -import
 
 substitutions:
-  _ENV: dev  
+  _ENV: dev
 
 options:
   logging: CLOUD_LOGGING_ONLY
