@@ -40,9 +40,6 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-      - name: Terraform Format Check
-        run: terraform fmt -check -recursive
-
       - name: Auto-format & Commit 
         if: github.event_name == 'push'
         run: |
@@ -52,6 +49,9 @@ jobs:
           git add .
           git diff --cached --quiet || git commit -m "ci: auto-format Terraform files"
           git push || echo "No changes to push"
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
 
       - name: Select or Create Workspace
         run: terraform workspace select ${{ github.ref_name }} || terraform workspace new ${{ github.ref_name }}
