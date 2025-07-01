@@ -18,7 +18,7 @@ This project implements a modular Terraform infrastructure with the following co
 
 ### Infrastructure Architecture Diagram
 
-![Infrastructure Architecture](architecture/diagram.png)
+![Infrastructure Architecture](architecture/architecture.png)
 
 *Detailed architecture diagram showing the complete infrastructure setup across all environments*
 
